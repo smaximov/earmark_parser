@@ -1,4 +1,5 @@
 defmodule EarmarkParser.List.ListReader do
+  alias EarmarkParser.List.{ListInfo}
   @moduledoc false
 
   @not_pending {nil, 0}
@@ -11,13 +12,13 @@ defmodule EarmarkParser.List.ListReader do
   def read_list_item([line|rest]=input, item_lines, list_info, options) do
     case _still_in_list?(line, list_info) do
       {true, list_info1} -> read_list_item(rest, [line|item_lines], list_info1, options)
-      {false, options1}  -> {Enum.reverse(item_lines), input, options1)
+      {false, options1}  -> {Enum.reverse(item_lines), input, options1}
     end
   end
 
 
   defp _still_in_list?(line, list_info)
-  defp _still_in_list?(line, {pending: @not_pending}=list_info) do
+  defp _still_in_list?(line, %ListInfo{pending: @not_pending}=list_info) do
     list_info1 = ListInfo.update_pending(list_info, line)
     if ListInfo.pending?(list_info1) do
       {true, list_info1}

@@ -13,12 +13,12 @@ defmodule EarmarkParser.List.ListParser do
 
   # @spec parse_list_items(Lines, Blocks, ListInfo, Option) :: {%Block.List{}, Lines, Option}
   def parse_list_items(input, items, list_info, options) do
-    {list_item, rest, options1} = parse_list_item(input, [], options)
+    {list_item, rest, options1} = parse_list_item(input, [], list_info, options)
     items1 = [list_item | items]
     if input_continues_list?(input, list_info) do
       parse_list_items(rest, items1, list_info, options1)
     else
-      {make_list(items1), rest, options1}
+      {List.new(items1, list_info), rest, options1}
     end
   end
 
@@ -26,12 +26,15 @@ defmodule EarmarkParser.List.ListParser do
   def parse_list_item([line|_]=input, item_lines, list_info, options) do
     # Make a new list Item
     list_item = ListItem.new(line)
-    {item_lines, rest, options1} = ListReader.read_list_item(input, input_lines, list_info, options)
+    {item_lines, rest, options1} = ListReader.read_list_item(input, input, list_info, options)
     parse_list_item_lines(item_lines, list_item, options)
   end
 
-  def parse
-
+  defp parse_list_item_lines(lines, list_item, options)
+  defp parse_list_item_lines(lines, list_item, options) do
+    lines
+    |> behead_content()
+  end
   defp parse_list_item_start(input, output, list_info, options)
   defp parse_list_item_start([], output, _list_info, options) do
     {Enum.reverse(output), [], options}
